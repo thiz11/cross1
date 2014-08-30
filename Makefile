@@ -1,8 +1,8 @@
 VERSION = 3
 PATCHLEVEL = 16
-SUBLEVEL = 0
-EXTRAVERSION = -rc7
-NAME = Shuffling Zombie Juror
+SUBLEVEL = 1
+EXTRAVERSION = -11
+NAME = Seifer Cross
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
@@ -1458,11 +1458,11 @@ image_name:
 # Clear a bunch of variables before executing the submake
 tools/: FORCE
 	$(Q)mkdir -p $(objtree)/tools
-	$(Q)$(MAKE) LDFLAGS= MAKEFLAGS="$(filter --j% -j,$(MAKEFLAGS))" O=$(objtree) subdir=tools -C $(src)/tools/
+	$(Q)$(MAKE) LDFLAGS= MAKEFLAGS="$(filter --j% -j,$(MAKEFLAGS))" O=$(objtree) subdir=tools -C $(src)/tools
 
 tools/%: FORCE
 	$(Q)mkdir -p $(objtree)/tools
-	$(Q)$(MAKE) LDFLAGS= MAKEFLAGS="$(filter --j% -j,$(MAKEFLAGS))" O=$(objtree) subdir=tools -C $(src)/tools/ $*
+	$(Q)$(MAKE) LDFLAGS= MAKEFLAGS="$(filter --j% -j,$(MAKEFLAGS))" O=$(objtree) subdir=tools -C $(src)/tools $*
 
 # Single targets
 # ---------------------------------------------------------------------------

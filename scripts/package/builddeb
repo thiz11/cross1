@@ -64,18 +64,18 @@ create_package() {
 	fi
 
 	# Create the package
-	dpkg-gencontrol -isp $forcearch -Vkernel:debarch="${debarch:-$(dpkg --print-architecture)}" -p$pname -P"$pdir"
+	dpkg-gencontrol $forcearch -Vkernel:debarch="${debarch:-$(dpkg --print-architecture)}" -p$pname -P"$pdir"
 	dpkg --build "$pdir" ..
 }
 
 # Some variables and settings used throughout the script
 version=$KERNELRELEASE
 revision=$(cat .version)
-if [ -n "$KDEB_PKGVERSION" ]; then
-	packageversion=$KDEB_PKGVERSION
-else
-	packageversion=$version-$revision
-fi
+#if [ -n "$KDEB_PKGVERSION" ]; then
+#	packageversion=$KDEB_PKGVERSION
+#else
+#	packageversion=$version-$revision
+#fi
 tmpdir="$objtree/debian/tmp"
 fwdir="$objtree/debian/fwtmp"
 kernel_headers_dir="$objtree/debian/hdrtmp"
@@ -183,24 +183,23 @@ if grep -q '^CONFIG_BLK_DEV_INITRD=y' $KCONFIG_CONFIG; then
 else
 	want_initrd=No
 fi
-for script in postinst postrm preinst prerm ; do
-	mkdir -p "$tmpdir$debhookdir/$script.d"
-	cat <<EOF > "$tmpdir/DEBIAN/$script"
-#!/bin/sh
+# for script in postinst postrm preinst prerm ; do
+#	mkdir -p "$tmpdir$debhookdir/$script.d"
+#	cat <<EOF > "$tmpdir/DEBIAN/$script"
 
-set -e
+# set -e
 
 # Pass maintainer script parameters to hook scripts
-export DEB_MAINT_PARAMS="\$*"
+# export DEB_MAINT_PARAMS="\$*"
 
 # Tell initramfs builder whether it's wanted
-export INITRD=$want_initrd
+# export INITRD=$want_initrd
 
-test -d $debhookdir/$script.d && run-parts --arg="$version" --arg="/$installed_image_path" $debhookdir/$script.d
-exit 0
-EOF
-	chmod 755 "$tmpdir/DEBIAN/$script"
-done
+# test -d $debhookdir/$script.d && run-parts --arg="$version" --arg="/$installed_image_path" $debhookdir/$script.d
+# exit 0
+# EOF
+#	chmod 755 "$tmpdir/DEBIAN/$script"
+# done
 
 # Try to determine maintainer and email values
 if [ -n "$DEBEMAIL" ]; then
@@ -229,65 +228,65 @@ linux-upstream ($packageversion) unstable; urgency=low
 EOF
 
 # Generate copyright file
-cat <<EOF > debian/copyright
-This is a packacked upstream version of the Linux kernel.
+# cat <<EOF > debian/copyright
+# This is a packacked upstream version of the Linux kernel.
 
-The sources may be found at most Linux ftp sites, including:
-ftp://ftp.kernel.org/pub/linux/kernel
+# The sources may be found at most Linux ftp sites, including:
+# ftp://ftp.kernel.org/pub/linux/kernel
 
-Copyright: 1991 - 2009 Linus Torvalds and others.
+# Copyright: 1991 - 2009 Linus Torvalds and others.
 
-The git repository for mainline kernel development is at:
-git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; version 2 dated June, 1991.
-
-On Debian GNU/Linux systems, the complete text of the GNU General Public
-License version 2 can be found in \`/usr/share/common-licenses/GPL-2'.
-EOF
+# The git repository for mainline kernel development is at:
+# git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; version 2 dated June, 1991.
+#
+# On Debian GNU/Linux systems, the complete text of the GNU General Public
+# License version 2 can be found in \`/usr/share/common-licenses/GPL-2'.
+# EOF
 
 # Generate a control file
-cat <<EOF > debian/control
-Source: linux-upstream
-Section: kernel
-Priority: optional
-Maintainer: $maintainer
-Standards-Version: 3.8.4
-Homepage: http://www.kernel.org/
-EOF
+# cat <<EOF > debian/control
+# Source: linux-upstream
+# Section: kernel
+# Priority: optional
+# Maintainer: $maintainer
+# Standards-Version: 3.8.4
+# Homepage: http://www.kernel.org/
+# EOF
 
-if [ "$ARCH" = "um" ]; then
-	cat <<EOF >> debian/control
+# if [ "$ARCH" = "um" ]; then
+#	cat <<EOF >> debian/control
 
-Package: $packagename
-Provides: linux-image, linux-image-2.6, linux-modules-$version
-Architecture: any
-Description: User Mode Linux kernel, version $version
- User-mode Linux is a port of the Linux kernel to its own system call
- interface.  It provides a kind of virtual machine, which runs Linux
- as a user process under another Linux kernel.  This is useful for
- kernel development, sandboxes, jails, experimentation, and
- many other things.
- .
- This package contains the Linux kernel, modules and corresponding other
- files, version: $version.
-EOF
+# Package: $packagename
+# Provides: linux-image, linux-image-2.6, linux-modules-$version
+# Architecture: any
+# Description: User Mode Linux kernel, version $version
+#  User-mode Linux is a port of the Linux kernel to its own system call
+# interface.  It provides a kind of virtual machine, which runs Linux
+# as a user process under another Linux kernel.  This is useful for
+# kernel development, sandboxes, jails, experimentation, and
+# many other things.
+# .
+# This package contains the Linux kernel, modules and corresponding other
+# files, version: $version.
+# EOF
 
-else
-	cat <<EOF >> debian/control
+# else
+#	cat <<EOF >> debian/control
 
-Package: $packagename
-Provides: linux-image, linux-image-2.6, linux-modules-$version
-Suggests: $fwpackagename
-Architecture: any
-Description: Linux kernel, version $version
- This package contains the Linux kernel, modules and corresponding other
- files, version: $version.
-EOF
+# Package: $packagename
+# Provides: linux-image, linux-image-2.6, linux-modules-$version
+# Suggests: $fwpackagename
+# Architecture: any
+# Description: Linux kernel, version $version
+# This package contains the Linux kernel, modules and corresponding other
+# files, version: $version.
+# EOF
 
-fi
+# fi
 
 # Build kernel header package
 (cd $srctree; find . -name Makefile\* -o -name Kconfig\* -o -name \*.pl) > "$objtree/debian/hdrsrcfiles"
@@ -303,43 +302,43 @@ mkdir -p "$destdir"
 ln -sf "/usr/src/linux-headers-$version" "$kernel_headers_dir/lib/modules/$version/build"
 rm -f "$objtree/debian/hdrsrcfiles" "$objtree/debian/hdrobjfiles"
 
-cat <<EOF >> debian/control
-
-Package: $kernel_headers_packagename
-Provides: linux-headers, linux-headers-2.6
-Architecture: any
-Description: Linux kernel headers for $KERNELRELEASE on \${kernel:debarch}
- This package provides kernel header files for $KERNELRELEASE on \${kernel:debarch}
- .
- This is useful for people who need to build external modules
-EOF
+# cat <<EOF >> debian/control
+#
+# Package: $kernel_headers_packagename
+# Provides: linux-headers, linux-headers-2.6
+# Architecture: any
+# Description: Linux kernel headers for $KERNELRELEASE on \${kernel:debarch}
+# This package provides kernel header files for $KERNELRELEASE on \${kernel:debarch}
+# .
+# This is useful for people who need to build external modules
+# EOF
 
 # Do we have firmware? Move it out of the way and build it into a package.
 if [ -e "$tmpdir/lib/firmware" ]; then
 	mv "$tmpdir/lib/firmware"/* "$fwdir/lib/firmware/$version/"
 	rmdir "$tmpdir/lib/firmware"
 
-	cat <<EOF >> debian/control
+#	cat <<EOF >> debian/control
 
-Package: $fwpackagename
-Architecture: all
-Description: Linux kernel firmware, version $version
- This package contains firmware from the Linux kernel, version $version.
-EOF
+# Package: $fwpackagename
+# Architecture: all
+# Description: Linux kernel firmware, version $version
+# This package contains firmware from the Linux kernel, version $version.
+# EOF
 
 	create_package "$fwpackagename" "$fwdir"
 fi
 
-cat <<EOF >> debian/control
+# cat <<EOF >> debian/control
 
-Package: $libc_headers_packagename
-Section: devel
-Provides: linux-kernel-headers
-Architecture: any
-Description: Linux support headers for userspace development
- This package provides userspaces headers from the Linux kernel.  These headers
- are used by the installed headers for GNU glibc and other system libraries.
-EOF
+# Package: $libc_headers_packagename
+# Section: devel
+# Provides: linux-kernel-headers
+# Architecture: any
+# Description: Linux support headers for userspace development
+# This package provides userspaces headers from the Linux kernel.  These headers
+# are used by the installed headers for GNU glibc and other system libraries.
+# EOF
 
 if [ "$ARCH" != "um" ]; then
 	create_package "$kernel_headers_packagename" "$kernel_headers_dir"
@@ -360,16 +359,16 @@ if [ -n "$BUILD_DEBUG" ] ; then
 	# kdump-tools
 	ln -s lib/modules/$version/vmlinux $dbg_dir/usr/lib/debug/vmlinux-$version
 
-	cat <<EOF >> debian/control
+#	cat <<EOF >> debian/control
 
-Package: $dbg_packagename
-Section: debug
-Provides: linux-debug, linux-debug-$version
-Architecture: any
-Description: Linux kernel debugging symbols for $version
- This package will come in handy if you need to debug the kernel. It provides
- all the necessary debug symbols for the kernel and its modules.
-EOF
+# Package: $dbg_packagename
+# Section: debug
+# Provides: linux-debug, linux-debug-$version
+# Architecture: any
+# Description: Linux kernel debugging symbols for $version
+# This package will come in handy if you need to debug the kernel. It provides
+# all the necessary debug symbols for the kernel and its modules.
+# EOF
 
 	create_package "$dbg_packagename" "$dbg_dir"
 fi

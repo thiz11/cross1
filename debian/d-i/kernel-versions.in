@@ -1,0 +1,18 @@
+# arch	version		flavour		installedname			suffix	bdep
+amd64	PKGVER		generic		PKGVER			-	
+
+i386	PKGVER		generic		PKGVER			-	
+
+armhf	PKGVER		generic		PKGVER			-
+
+armhf	PKGVER		generic-lpae		PKGVER		-
+
+arm64	PKGVER		generic		PKGVER			-
+
+ppc64el	PKGVER		generic		PKGVER			-
+
+# Ports
+# arch	version		flavour		installedname			suffix	bdep
+powerpc	PKGVER	powerpc-smp	PKGVER-powerpc-smp	-	
+powerpc	PKGVER	powerpc64-smp	PKGVER-powerpc64-smp	-	
+powerpc PKGVER	powerpc-e500mc	PKGVER-powerpc-e500mc	-	

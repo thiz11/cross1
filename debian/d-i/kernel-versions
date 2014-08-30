@@ -1,0 +1,18 @@
+# arch	version		flavour		installedname			suffix	bdep
+amd64	3.16.1-11-cross1		generic		3.16.1-11-cross1			-	
+
+i386	3.16.1-11-cross1		generic		3.16.1-11-cross1			-	
+
+armhf	3.16.1-11-cross1		generic		3.16.1-11-cross1			-
+
+armhf	3.16.1-11-cross1		generic-lpae		3.16.1-11-cross1		-
+
+arm64	3.16.1-11-cross1		generic		3.16.1-11-cross1			-
+
+ppc64el	3.16.1-11-cross1		generic		3.16.1-11-cross1			-
+
+# Ports
+# arch	version		flavour		installedname			suffix	bdep
+powerpc	3.16.1-11-cross1	powerpc-smp	3.16.1-11-cross1-powerpc-smp	-	
+powerpc	3.16.1-11-cross1	powerpc64-smp	3.16.1-11-cross1-powerpc64-smp	-	
+powerpc 3.16.1-11-cross1	powerpc-e500mc	3.16.1-11-cross1-powerpc-e500mc	-	
